@@ -1,4 +1,3 @@
-#stock3.0
 Sub Stocks()
     Dim ws As Worksheet
 
