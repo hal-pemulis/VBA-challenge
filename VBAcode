@@ -114,6 +114,3 @@ Sub Stocks()
     Next ws
     
 End Sub
-
-
-
