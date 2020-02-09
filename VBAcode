@@ -8,27 +8,40 @@ Sub Stocks()
         last_row = ws.Cells(Rows.Count, 1).End(xlUp).Row
     
         Dim ticker As String
+        
+        ' I haven't been able to get "Interger," "Double," or "Long" to work on my computer
         Dim row_summary, opening, closing, total_volume As Variant
         
         ' Number of row where summary will appear
         row_summary = 2
-      
+              
+        'When this variable changes, it will trigger stuff to happen
         ticker = ""
         
         ' Begin loop through raw data
+        ' "+1" added to "last_row" so the the final row will also be triggered
         For I = 2 To (last_row + 1)
+             
+             ' Conditional to work around the the first row of data
+             ' Might be a cleaner way to do this...
              If I = 2 Then
                 ticker = ws.Cells(I, 1).Value
                 ws.Cells(row_summary, 9).Value = ticker
                 opening = ws.Cells(I, 3).Value
                 total_volume = ws.Cells(I, 7).Value
              
+            ' When "ticker changes:
+            ' 1. Grab "closing" from row before
+            ' 2. Use calculation to determine yearly change
+            ' 3. Add "volume" from line before to "total_volume"
+            ' 4. Set cell values and style
             ElseIf ws.Cells(I, 1).Value <> ticker Then
                 closing = ws.Cells(I - 1, 6).Value
                 total_volume = total_volume + ws.Cells(I - 1, 7).Value
                 ws.Cells(row_summary, 10).Value = (closing - opening)
                 ws.Cells(row_summary, 10).Style = "currency"
                 
+                ' Conditional to avoid "Overflow" error caused by dividing by zero on sheet P
                 If opening <> 0 Then
                     ws.Cells(row_summary, 11).Value = ((closing - opening) / opening)
                 Else
@@ -37,18 +50,26 @@ Sub Stocks()
                 
                 ws.Cells(row_summary, 11).Style = "percent"
                 ws.Cells(row_summary, 12).Value = total_volume
+                
+                ' The "Reset" - summary row moves down one and "ticker" is reassigned
+                ' "ticker" placed in next row in summary ticker column
+                ' "opening" and "total_volume" reset
                 row_summary = row_summary + 1
                 ticker = ws.Cells(I, 1).Value
                 ws.Cells(row_summary, 9).Value = ticker
                 opening = ws.Cells(I, 3).Value
                 total_volume = ws.Cells(I, 7).Value
-
+            
+            ' For the rows where "ticker" doesn't change, add volume to "total_volume"
             Else
                 total_volume = total_volume + ws.Cells(I - 1, 7).Value
                 
             End If
+            
+        ' Next row
         Next I
         
+        ' Establish high/low variables and set them equal to zero or empty string
         Dim max_change, max_decrease, max_volume As Variant
     
         Dim max_ticker, low_ticker, vol_ticker As String
@@ -61,10 +82,12 @@ Sub Stocks()
         low_ticker = ""
         vol_ticker = ""
         
+        ' Resets "last_row" so conditional formatting doesn't go all the way down the sheet
         last_row = ws.Cells(Rows.Count, 10).End(xlUp).Row
                 
         ' Begin loop through summary
         For I = 2 To last_row
+            
             ' Apply conditional formating
             If ws.Cells(I, 10).Value < 0 Then
                 ws.Cells(I, 10).Interior.ColorIndex = 3
@@ -114,3 +137,5 @@ Sub Stocks()
     Next ws
     
 End Sub
+
+
