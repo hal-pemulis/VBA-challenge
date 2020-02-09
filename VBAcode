@@ -4,7 +4,7 @@ Sub Stocks()
     ' Loop through sheets
     For Each ws In ThisWorkbook.Worksheets
 
-        ' Set number of rows to loop throug
+        ' Set number of rows to loop through
         last_row = ws.Cells(Rows.Count, 1).End(xlUp).Row
     
         Dim ticker As String
